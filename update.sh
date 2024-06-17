@@ -4,7 +4,10 @@ set -e
 
 RELEASE="23.05.2"
 PACKAGE="tailscale_1.58.2-1_ARCH.ipk"
+
 ARCHES=$(curl -s https://downloads.openwrt.org/releases/${RELEASE}/packages/ | grep -oP '(?<=href=")[^/]+(?=/")')
+
+mkdir -P ./dist
 
 for ARCH in $ARCHES; do
     URL="https://downloads.openwrt.org/releases/${RELEASE}/packages/${ARCH}/packages/${PACKAGE//ARCH/${ARCH}}"
