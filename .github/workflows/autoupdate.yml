@@ -1,0 +1,23 @@
+on:
+  schedule:
+    - cron: "0 0 * * 0" # Weekly, on Sunday's
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+        with:
+          persist-credentials: false
+
+      - name: Auto Update
+        run: bash ./update.sh
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "dist/*"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            Auto Update 
