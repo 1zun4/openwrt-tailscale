@@ -3,11 +3,12 @@
 set -e
 
 RELEASE="23.05.2"
-PACKAGE="tailscale_1.58.2-1_ARCH.ipk"
+VERSION="1.58.2"
+PACKAGE="tailscale_${VERSION}-1_ARCH.ipk"
 
 ARCHES=$(curl -s https://downloads.openwrt.org/releases/${RELEASE}/packages/ | grep -oP '(?<=href=")[^/]+(?=/")')
 
-mkdir -P ./dist
+mkdir -p ./dist
 
 for ARCH in $ARCHES; do
     URL="https://downloads.openwrt.org/releases/${RELEASE}/packages/${ARCH}/packages/${PACKAGE//ARCH/${ARCH}}"
@@ -23,6 +24,8 @@ cd ./dist
 
 for package in *.ipk; do
     STARTING_SIZE=$(du -sb ${package} | awk '{ print $1 }')
+
+    echo "Patching ${package}"
     {
         mkdir ${package%%.ipk}
         pushd ${package%%.ipk}
@@ -56,3 +59,6 @@ for package in *.ipk; do
     FINAL_SIZE=$(du -sb ${package} | awk '{ print $1 }')
     echo "Patched ${package}, from ${STARTING_SIZE} to ${FINAL_SIZE} bytes"
 done
+
+# Clean up
+find . ! -name '*.ipk' -delete
