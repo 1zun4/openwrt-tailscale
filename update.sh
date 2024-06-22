@@ -3,15 +3,12 @@
 set -e
 
 RELEASE="23.05.2"
-VERSION="1.58.2"
+VERSION="1.58.1"
 PACKAGE="tailscale_${VERSION}-1_ARCH.ipk"
 
 ARCHES=$(curl -s https://downloads.openwrt.org/releases/${RELEASE}/packages/ | grep -oP '(?<=href=")[^/]+(?=/")')
 
 mkdir -p ./dist
-
-wget --version | head -n 1
-tar --version  | head -n 1
 
 for ARCH in $ARCHES; do
     {
@@ -23,13 +20,12 @@ for ARCH in $ARCHES; do
                 --header 'X-GitHub: github.com/du-cki/openwrt-tailscale' \
                 "https://downloads.openwrt.org/releases/${RELEASE}/packages/${ARCH}/packages/${PACKAGE_NAME}" > /dev/null
 
-
             echo "Downloaded ${PACKAGE_NAME}"
         ) || true
     } &
 done
 
-wait
+wait # waits for all subshells (downloads) to finish
 
 cd ./dist
 
@@ -70,5 +66,4 @@ for package in *.ipk; do
     echo "Patched ${package}, from ${STARTING_SIZE} to ${FINAL_SIZE} bytes"
 done
 
-# Clean up
-find . ! -name '*.ipk' -delete
+find . ! -name '*.ipk' -delete # Clean up

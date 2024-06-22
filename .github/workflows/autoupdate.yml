@@ -4,7 +4,6 @@ on:
   workflow_dispatch:
   push:
 
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -16,20 +15,41 @@ jobs:
         with:
           persist-credentials: false
 
-      # - name: Check for Updates
-      # run: |
-      # VERSION=sed -n 's/^VERSION="\([^"]*\)".*/\1/p' ./update.sh
-
-      - name: Auto Update
-        id: autoupdate
+      - name: Check for Updates
+        id: version
         run: |
+          CURR_VERSION=$(sed -n 's/^VERSION="\([^"]*\)".*/\1/p' ./update.sh)
+          RELEASE=$(sed -n 's/^RELEASE="\([^"]*\)".*/\1/p' ./update.sh)
+
+          # This is a hacky way to get the latest release and focuses only on the arch mips_24kc.
+          # Not sure if there's a better way to do this.
+          NEW_VERSION=$(curl -s https://downloads.openwrt.org/releases/${RELEASE}/packages/mips_24kc/packages/ | grep -oP 'tailscale_\K\d+\.\d+\.\d+' | tail -n 1)
+
+          if [ "$CURR_VERSION" == "$NEW_VERSION" ]; then
+            echo "::set-output name=version::none"
+          else
+            echo "::set-output name=version::$NEW_VERSION"
+          fi
+
+      - name: Build Refs
+        if: ${{ steps.version.outputs.version != 'none' }}
+        run: |
+          sed -i "s/^RELEASE=\".*\"/RELEASE=\"${{ steps.version.outputs.version }}\"/" ./update.sh
           bash ./update.sh
-          sed -n 's/^VERSION="\([^"]*\)".*/\1/p' ./update.sh
 
       - name: Create Release
+        if: ${{ steps.version.outputs.version != 'none' }}
         uses: ncipollo/release-action@v1
         with:
           artifacts: "dist/*"
-          tag: v${{ steps.autoupdate.outputs.version }}
+          tag: v${{ steps.version.outputs.version }}
           body: |
-            Auto Update to v${{ steps.autoupdate.outputs.version }}
+            Auto Update to v${{ steps.version.outputs.version }}
+
+      - name: Commit & Push changes
+        if: ${{ steps.version.outputs.version != 'none' }}
+        uses: actions-js/push@master
+        with:
+          branch: main
+          message: "Auto Update to v${{ steps.version.outputs.version }}"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
