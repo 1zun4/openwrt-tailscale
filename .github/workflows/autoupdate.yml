@@ -22,11 +22,14 @@ jobs:
 
       - name: Auto Update
         id: autoupdate
-        run: bash ./update.sh
+        run: |
+          bash ./update.sh
+          sed -n 's/^VERSION="\([^"]*\)".*/\1/p' ./update.sh
 
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:
           artifacts: "dist/*"
+          tag: v${{ steps.autoupdate.outputs.version }}
           body: |
             Auto Update to v${{ steps.autoupdate.outputs.version }}
