@@ -18,8 +18,8 @@ jobs:
       - name: Check for Updates
         id: version
         run: |
-          CURR_VERSION=$(sed -n 's/^VERSION="\([^"]*\)".*/\1/p' ./update.sh)
           RELEASE=$(sed -n 's/^RELEASE="\([^"]*\)".*/\1/p' ./update.sh)
+          CURR_VERSION=$(sed -n 's/^VERSION="\([^"]*\)".*/\1/p' ./update.sh)
 
           # This is a hacky way to get the latest release and focuses only on the arch mips_24kc.
           # Not sure if there's a better way to do this.
@@ -34,7 +34,7 @@ jobs:
       - name: Build Refs
         if: ${{ steps.version.outputs.version != 'none' }}
         run: |
-          sed -i "s/^RELEASE=\".*\"/RELEASE=\"${{ steps.version.outputs.version }}\"/" ./update.sh
+          sed -i "s/^VERSION=\".*\"/VERSION=\"${{ steps.version.outputs.version }}\"/" ./update.sh
           bash ./update.sh
 
       - name: Create Release
