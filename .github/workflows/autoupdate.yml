@@ -4,12 +4,13 @@ on:
   workflow_dispatch:
   push:
 
-permissions:
-  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
     steps:
       - uses: actions/checkout@master
         with:
@@ -27,6 +28,5 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: "dist/*"
-          token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             Auto Update to v${{ steps.autoupdate.outputs.version }}
