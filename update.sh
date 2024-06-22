@@ -10,12 +10,18 @@ ARCHES=$(curl -s https://downloads.openwrt.org/releases/${RELEASE}/packages/ | g
 
 mkdir -p ./dist
 
+wget --version | head -n 1
+tar --version  | head -n 1
+
 for ARCH in $ARCHES; do
     {
-        URL="https://downloads.openwrt.org/releases/${RELEASE}/packages/${ARCH}/packages/${PACKAGE//ARCH/${ARCH}}"
-
         (
-            wget -q $URL -O ./dist/${PACKAGE//ARCH/${ARCH}};
+            wget \
+                --quiet \
+                --header='X-GitHub: github.com/du-cki/openwrt-tailscale' \
+                --output-document=./dist/${PACKAGE//ARCH/${ARCH}} \
+                "https://downloads.openwrt.org/releases/${RELEASE}/packages/${ARCH}/packages/${PACKAGE//ARCH/${ARCH}}"
+
             echo "Downloaded ${PACKAGE//ARCH/${ARCH}}"
         ) || true
     } &
