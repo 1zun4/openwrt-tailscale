@@ -14,9 +14,9 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Check for Updates
-        run: |
-          # VERSION=sed -n 's/^VERSION="\([^"]*\)".*/\1/p' ./update.sh
+      # - name: Check for Updates
+      # run: |
+      # VERSION=sed -n 's/^VERSION="\([^"]*\)".*/\1/p' ./update.sh
 
       - name: Auto Update
         id: autoupdate
