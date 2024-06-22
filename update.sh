@@ -11,14 +11,15 @@ ARCHES=$(curl -s https://downloads.openwrt.org/releases/${RELEASE}/packages/ | g
 mkdir -p ./dist
 
 for ARCH in $ARCHES; do
-    URL="https://downloads.openwrt.org/releases/${RELEASE}/packages/${ARCH}/packages/${PACKAGE//ARCH/${ARCH}}"
-
-    echo "Downloading ${PACKAGE//ARCH/${ARCH}}"
-
     {
+        URL="https://downloads.openwrt.org/releases/${RELEASE}/packages/${ARCH}/packages/${PACKAGE//ARCH/${ARCH}}"
+        echo "Downloading ${PACKAGE//ARCH/${ARCH}}"
+
         wget -q $URL -O ./dist/${PACKAGE//ARCH/${ARCH}} || true
-    }
+    } &
 done
+
+wait
 
 cd ./dist
 
@@ -26,6 +27,7 @@ for package in *.ipk; do
     STARTING_SIZE=$(du -sb ${package} | awk '{ print $1 }')
 
     echo "Patching ${package}"
+
     {
         mkdir ${package%%.ipk}
         pushd ${package%%.ipk}
