@@ -18,11 +18,11 @@ for ARCH in $ARCHES; do
         (
             PACKAGE_NAME=${PACKAGE//ARCH/${ARCH}}
 
-            wget \
-                --quiet \
-                --header='X-GitHub: github.com/du-cki/openwrt-tailscale' \
-                --output-document=./dist/${PACKAGE_NAME} \
-                "https://downloads.openwrt.org/releases/${RELEASE}/packages/${ARCH}/packages/${PACKAGE_NAME}"
+            curl -f -s \
+                -o ./dist/${PACKAGE_NAME} \
+                --header 'X-GitHub: github.com/du-cki/openwrt-tailscale' \
+                "https://downloads.openwrt.org/releases/${RELEASE}/packages/${ARCH}/packages/${PACKAGE_NAME}" > /dev/null
+
 
             echo "Downloaded ${PACKAGE_NAME}"
         ) || true
@@ -35,8 +35,6 @@ cd ./dist
 
 for package in *.ipk; do
     STARTING_SIZE=$(du -sb ${package} | awk '{ print $1 }')
-
-    echo "Patching ${package}"
 
     {
         mkdir ${package%%.ipk}
