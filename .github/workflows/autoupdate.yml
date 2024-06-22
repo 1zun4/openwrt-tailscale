@@ -19,6 +19,9 @@ jobs:
       # run: |
       # VERSION=sed -n 's/^VERSION="\([^"]*\)".*/\1/p' ./update.sh
 
+      - name: Update wget
+        run: sudo apt install -y wget
+
       - name: Auto Update
         id: autoupdate
         run: bash ./update.sh

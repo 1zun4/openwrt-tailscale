@@ -16,13 +16,15 @@ tar --version  | head -n 1
 for ARCH in $ARCHES; do
     {
         (
+            PACKAGE_NAME=${PACKAGE//ARCH/${ARCH}}
+
             wget \
                 --quiet \
                 --header='X-GitHub: github.com/du-cki/openwrt-tailscale' \
-                --output-document=./dist/${PACKAGE//ARCH/${ARCH}} \
-                "https://downloads.openwrt.org/releases/${RELEASE}/packages/${ARCH}/packages/${PACKAGE//ARCH/${ARCH}}"
+                --output-document=./dist/${PACKAGE_NAME} \
+                "https://downloads.openwrt.org/releases/${RELEASE}/packages/${ARCH}/packages/${PACKAGE_NAME}"
 
-            echo "Downloaded ${PACKAGE//ARCH/${ARCH}}"
+            echo "Downloaded ${PACKAGE_NAME}"
         ) || true
     } &
 done
