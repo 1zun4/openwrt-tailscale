@@ -13,9 +13,11 @@ mkdir -p ./dist
 for ARCH in $ARCHES; do
     {
         URL="https://downloads.openwrt.org/releases/${RELEASE}/packages/${ARCH}/packages/${PACKAGE//ARCH/${ARCH}}"
-        echo "Downloading ${PACKAGE//ARCH/${ARCH}}"
 
-        wget -q $URL -O ./dist/${PACKAGE//ARCH/${ARCH}} || true
+        (
+            wget -q $URL -O ./dist/${PACKAGE//ARCH/${ARCH}};
+            echo "Downloaded ${PACKAGE//ARCH/${ARCH}}"
+        ) || true
     } &
 done
 
