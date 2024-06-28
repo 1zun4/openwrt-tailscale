@@ -3,6 +3,7 @@ on:
     - cron: "0 0 * * 0" # Weekly, on Sunday's
   workflow_dispatch:
   push:
+    paths-ignore: [README.md]
 
 jobs:
   build:
@@ -35,6 +36,7 @@ jobs:
         if: ${{ steps.version.outputs.version != 'none' }}
         run: |
           sed -i "s/^VERSION=\".*\"/VERSION=\"${{ steps.version.outputs.version }}\"/" ./update.sh
+          sed -i "s/^export VERSION=\".*\"/export VERSION=\"${{ steps.version.outputs.version }}\"/" ./README.md
           bash ./update.sh
 
       - name: Create Release
