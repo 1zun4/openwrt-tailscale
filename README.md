@@ -1,6 +1,7 @@
 # Tailscale on Smaller OpenWRT Devices
 
-> **IMPORTANT:** This project generates binaries automatically and does not come with any warranty. As of the time of writing, Tailscale v1.58.2 works fine on a Xiaomi Mi Router 4A Gigabit Edition running OpenWrt 22.03.3. Proceed with caution and use this software at your own risk.
+> [!WARNING]
+> This project generates binaries automatically and does not come with any warranty. As of the time of writing, Tailscale v1.58.2 works fine on a Xiaomi Mi Router 4A Gigabit Edition running OpenWrt 22.03.3. Proceed with caution and use this software at your own risk.
 
 This project is a slightly modified version of [this guide](https://openwrt.org/docs/guide-user/services/vpn/tailscale/start#installation_on_storage_constrained_devices).
 
@@ -25,17 +26,19 @@ cd tailscale
 git checkout v$VERSION
 ```
 
-### 2. Compile a Portable `tailscale` Binary for Your Device
+### 2. Compile a Portable `tailscale.combined` Binary for Your Device
 
 Follow [this guide](https://tailscale.com/kb/1207/small-tailscale#step-3-compressing-tailscale) to build the `tailscale.combined` binary for your device.
 
-> **Note:** Set the `GOOS` and `GOARCH` environment variables to cross-compile the binary for your device. For example:
+> [!NOTE]
+> Set the `GOOS` and `GOARCH` environment variables to cross-compile the binary for your device. For example:
 
 ```sh
 GOOS=linux GOARCH=$ARCH go build -o tailscale.combined -tags ...
 ```
 
-> **Note:** The value of `$ARCH` might not always match the `GOARCH` environment variable. Verify the correct `GOARCH` value based on your device's architecture. For more details on supported values, refer to [this guide](https://gist.github.com/asukakenji/f15ba7e588ac42795f421b48b8aede63).
+> [!NOTE]
+> The value of `$ARCH` might not always match the `GOARCH` environment variable. Verify the correct `GOARCH` value based on your device's architecture. For more details on supported values, refer to [this guide](https://gist.github.com/asukakenji/f15ba7e588ac42795f421b48b8aede63).
 
 - Run the final built `tailscale.combined` through `upx` to compress it:
 
@@ -43,9 +46,7 @@ GOOS=linux GOARCH=$ARCH go build -o tailscale.combined -tags ...
 upx --lzma --best ./tailscale.combined
 ```
 
-### 3. Download the IPK File
-
-- Download the IPK file for your router's architecture:
+### 3. Download the IPK
 
 ```sh
 wget https://github.com/du-cki/openwrt-tailscale/releases/download/v$VERSION/tailscale_$VERSION-1_$ARCH.ipk
@@ -56,16 +57,13 @@ wget https://github.com/du-cki/openwrt-tailscale/releases/download/v$VERSION/tai
 - Transfer the `tailscale.combined` binary and the IPK file to your router's `/tmp` directory:
 
 ```sh
-scp ./tailscale.combined root@openwrt.lan:/tmp
-scp tailscale_$VERSION_$ARCH.ipk root@openwrt.lan:/tmp/tailscale.ipk
+scp -O ./tailscale.combined root@openwrt.lan:/tmp
+scp -O tailscale_$VERSION_$ARCH.ipk root@openwrt.lan:/tmp/tailscale.ipk
 ```
 
 ### 5. Install Dependencies and Tailscale
 
-- SSH into your router and install the necessary packages:
-
 ```sh
-ssh root@openwrt.lan
 opkg update
 opkg install kmod-tun iptables-nft
 opkg install /tmp/tailscale.ipk
@@ -73,7 +71,7 @@ opkg install /tmp/tailscale.ipk
 
 ### 6. Use the Portable Version of Tailscale
 
-- Replace the existing `tailscale` and `tailscaled` binaries with the portable version:
+- Replace the installed `tailscale` and `tailscaled` binaries with the portable version:
 
 ```sh
 rm /usr/sbin/tailscaled
