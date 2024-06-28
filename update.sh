@@ -14,18 +14,22 @@ for ARCH in $ARCHES; do
     {
         (
             PACKAGE_NAME=${PACKAGE//ARCH/${ARCH}}
+            echo "Downloading ${PACKAGE_NAME}"
 
             curl -f -s \
                 -o ./dist/${PACKAGE_NAME} \
                 --header 'X-GitHub: github.com/du-cki/openwrt-tailscale' \
                 "https://downloads.openwrt.org/releases/${RELEASE}/packages/${ARCH}/packages/${PACKAGE_NAME}" > /dev/null
-
-            echo "Downloaded ${PACKAGE_NAME}"
         ) || true
     } &
 done
 
 wait # waits for all subshells (downloads) to finish
+
+if [ ! -f ./dist/*.ipk ]; then
+    echo "Failed to download any packages"
+    exit 1
+fi
 
 cd ./dist
 
