@@ -1,6 +1,4 @@
 on:
-  schedule:
-    - cron: "0 0 * * 0" # Weekly, on Sunday's
   workflow_dispatch:
   push:
     paths-ignore: [README.md]
@@ -24,13 +22,9 @@ jobs:
 
           # This is a hacky way to get the latest release and focuses only on the arch mips_24kc.
           # Not sure if there's a better way to do this.
-          NEW_VERSION=$(curl -s https://downloads.openwrt.org/releases/${RELEASE}/packages/mips_24kc/packages/ | grep -oP 'tailscale_\K\d+\.\d+\.\d+' | tail -n 1)
+          NEW_VERSION=$(curl -s https://downloads.openwrt.org/releases/${RELEASE}/packages/arm_cortex-a7_neon-vfpv4/packages/ | grep -oP 'tailscale_\K\d+\.\d+\.\d+' | tail -n 1)
 
-          if [ "$CURR_VERSION" == "$NEW_VERSION" ]; then
-            echo "version=none" >> $GITHUB_OUTPUT
-          else
-            echo "version::$NEW_VERSION" >> $GITHUB_OUTPUT
-          fi
+          echo "version::$NEW_VERSION" >> $GITHUB_OUTPUT
 
       - name: Build Refs
         if: ${{ steps.version.outputs.version != 'none' }}
