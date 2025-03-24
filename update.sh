@@ -3,8 +3,8 @@
 set -e
 
 RELEASE="24.10.0"
-VERSION="1.80.3"
-PACKAGE="tailscale_${VERSION}-1_ARCH.ipk"
+VERSION="1.80.3" # tailscale_1.80.3-r1_arm_cortex-a7_neon-vfpv4.ipk
+PACKAGE="tailscale_${VERSION}-r1_ARCH.ipk"
 
 ARCHES=$(curl -s https://downloads.openwrt.org/releases/${RELEASE}/packages/ | grep -oP '(?<=href=")[^/]+(?=/")')
 
