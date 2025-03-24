@@ -14,23 +14,9 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Check for Updates
-        id: version
-        run: |
-          RELEASE=$(sed -n 's/^RELEASE="\([^"]*\)".*/\1/p' ./update.sh)
-          CURR_VERSION=$(sed -n 's/^VERSION="\([^"]*\)".*/\1/p' ./update.sh)
-
-          # This is a hacky way to get the latest release and focuses only on the arch mips_24kc.
-          # Not sure if there's a better way to do this.
-          NEW_VERSION=$(curl -s https://downloads.openwrt.org/releases/${RELEASE}/packages/arm_cortex-a7_neon-vfpv4/packages/ | grep -oP 'tailscale_\K\d+\.\d+\.\d+' | tail -n 1)
-
-          echo "version::$NEW_VERSION" >> $GITHUB_OUTPUT
-
       - name: Build Refs
         if: ${{ steps.version.outputs.version != 'none' }}
         run: |
-          sed -i "s/^VERSION=\".*\"/VERSION=\"${{ steps.version.outputs.version }}\"/" ./update.sh
-          sed -i "s/^export VERSION=\".*\"/export VERSION=\"${{ steps.version.outputs.version }}\"/" ./README.md
           bash ./update.sh
 
       - name: Create Release
