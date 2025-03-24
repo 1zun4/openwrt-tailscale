@@ -2,8 +2,8 @@
 
 set -e
 
-RELEASE="23.05.2"
-VERSION="1.58.2"
+RELEASE="24.10.0"
+VERSION="1.80.3"
 PACKAGE="tailscale_${VERSION}-1_ARCH.ipk"
 
 ARCHES=$(curl -s https://downloads.openwrt.org/releases/${RELEASE}/packages/ | grep -oP '(?<=href=")[^/]+(?=/")')
